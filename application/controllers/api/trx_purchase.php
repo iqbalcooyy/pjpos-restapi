@@ -6,35 +6,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require APPPATH . 'libraries/REST_Controller.php';
 require APPPATH . 'libraries/Format.php';
 
-class trx_sales extends REST_Controller
+class trx_purchase extends REST_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('sales_model', 'sales');
+        $this->load->model('purchase_model', 'purchase');
     }
-    
+
     // INSERT
     public function index_post()
     {
         if ($this->post()) {
             $data = $this->post();
-            $salesId = 'S'.$this->sales->getSalesId(); //S is Sales
+            $purchaseId = 'P'.$this->purchase->getPurchaseId(); //P is Purchase
 
-            if($data['paid'] < $data['to_be_paid']) {
-                $statusSale = 'Terhutang';
-            } elseif($data['paid'] == $data['to_be_paid']) {
-                $statusSale = 'Lunas';
-            }
-
-            $insert = $this->sales->createSales($salesId, $data, $statusSale);
+            $insert = $this->purchase->createPurchase($purchaseId, $data);
     
             if ($insert > 0) {
                 $this->response([
                     'status' => true,
-                    'id' => $salesId,
-                    'status_sale' => $statusSale,
-                    'message' => 'Transaksi penjualan '.$salesId.' berhasil dibuat dengan status '.$statusSale.'!'
+                    'id' => $purchaseId,
+                    'message' => 'Purchase transaction '.$purchaseId.' has been created!'
                 ], REST_Controller::HTTP_CREATED);
             } else {
                 $this->response([

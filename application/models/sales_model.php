@@ -17,7 +17,7 @@ class sales_model extends CI_Model
         return date('dmy').$kd;
     }
 
-    public function createSales($salesId, $data)
+    public function createSales($salesId, $data, $statusSale)
     {
         $details = array();
         $size = count($data['item_id']);
@@ -30,8 +30,27 @@ class sales_model extends CI_Model
             );
         }
 
-        $this->db->insert('trx_sales_header', ['sale_id' => $salesId, 'cust_id' => $data['cust_id'], 'total_pay' => $data['total_pay'], 'discount' => $data['discount']]);
+        $this->db->insert('trx_sales_header', [
+            'sale_id' => $salesId, 
+            'cust_id' => $data['cust_id'], 
+            'to_be_paid' => $data['to_be_paid'], 
+            'discount' => $data['discount'],
+            'paid' => $data['paid'],
+            'status' => $statusSale
+            ]);
         $this->db->insert_batch('trx_sales_detail', $details);
+
+        //Update Stock after Sales
+        for($i=0; $i < $size; $i++){
+            $item_id = $data['item_id'][$i];
+            $sale_qty = $data['sale_qty'][$i];
+
+            $query = "UPDATE stock
+                SET item_qty = item_qty - $sale_qty
+                WHERE item_id = '$item_id'";
+
+            $this->db->query($query);
+        }
 
         return $this->db->affected_rows();
     }

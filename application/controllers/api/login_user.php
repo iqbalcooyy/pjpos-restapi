@@ -14,10 +14,10 @@ class login_user extends REST_Controller
         $this->load->model('user_model');
     }
 
-    public function index_get()
+    public function index_post()
     {
-        $username = $this->get('username');
-        $password = $this->get('password');
+        $username = $this->post('username');
+        $password = md5($this->post('password'));
 
         if ($username == null || $password == null) {
             $this->response([
@@ -28,11 +28,12 @@ class login_user extends REST_Controller
             $user = $this->user_model->getUser($username, $password);
 
             //jika tbl user ada isinya
-            if($user) {
+            if($user->num_rows() > 0) {
                 $this->response([
                     'status' => true,
                     'message' => 'Login Successfully',
-                    'result' => $user
+                    'rownum' => $user->num_rows(),
+                    'result' => $user->result()
                 ], REST_Controller::HTTP_OK);
             } else {
                 $this->response([

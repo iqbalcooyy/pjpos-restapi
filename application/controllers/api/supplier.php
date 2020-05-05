@@ -6,29 +6,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 require APPPATH . 'libraries/REST_Controller.php';
 require APPPATH . 'libraries/Format.php';
 
-class customers extends REST_Controller
+class supplier extends REST_Controller
 {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('customer_model', 'cust');
+        $this->load->model('supplier_model', 'supplier');
     }
 
     public function index_get()
     {
-        $customers = $this->cust->getCustomers();
+        $suppliers = $this->supplier->getSuppliers();
 
-        if ($customers) {
+        if ($suppliers) {
             $this->response([
                 'status' => true,
-                'message' => 'Load Customers Successfully',
-                'rownum' => $customers->num_rows(),
-                'result' => $customers->result_array()
+                'message' => 'Load Suppliers Successfully',
+                'rownum' => $suppliers->num_rows(),
+                'result' => $suppliers->result_array()
             ], REST_Controller::HTTP_OK);
         } else {
             $this->response([
                 'status' => false,
-                'message' => 'Customers not found!'
+                'message' => 'Suppliers not found!'
             ], REST_Controller::HTTP_OK);
         }
     }
@@ -38,21 +38,21 @@ class customers extends REST_Controller
     {
         if ($this->post()) {
             $data = $this->post();
-            if($data['cust_name'] == "" || $data['cust_address'] == "" || $data['cust_telp'] == "") {
+            if(trim($data['supplier_name']) == "" || trim($data['supplier_address']) == "" || trim($data['supplier_telp']) == "") {
                 $this->response([
                     'status' => false,
                     'message' => 'Mohon, lengkapi data!'
                 ], REST_Controller::HTTP_OK);
             } else {
-                $custId = $this->cust->getCustId();
+                $suppId = $this->supplier->getSuppId();
 
-                $insert = $this->cust->createNewCust($custId, $data);
+                $insert = $this->supplier->createNewSupp($suppId, $data);
 
                 if ($insert > 0) {
                     $this->response([
                         'status' => true,
-                        'id' => $custId,
-                        'message' => 'New customer '.$custId.' has been created!'
+                        'id' => $suppId,
+                        'message' => 'New supplier '.$suppId.' has been created!'
                     ], REST_Controller::HTTP_CREATED);
                 } else {
                     $this->response([
@@ -75,21 +75,21 @@ class customers extends REST_Controller
     {
         if ($this->put()) {
             $data = $this->put();
-            $custId = $data['cust_id'];
-            if(trim($data['cust_id']) == "" || trim($data['cust_name']) == "" || trim($data['cust_address']) == "" || trim($data['cust_telp']) == "") {
+            $suppId = $data['supplier_id'];
+            if(trim($data['supplier_id']) == "" || trim($data['supplier_name']) == "" || trim($data['supplier_address']) == "" || trim($data['supplier_telp']) == "") {
                 $this->response([
                     'status' => false,
                     'message' => 'Mohon, lengkapi data!'
                 ], REST_Controller::HTTP_OK);
             } else {
-                $update = $this->cust->updateCustomer($data);
+                $update = $this->supplier->updateSupplier($data);
 
                 if ($update > 0) {
                     $this->response([
                         'status' => true,
-                        'id' => $custId,
-                        'message' => 'Customer '.$custId.' has been modified!'
-                    ], REST_Controller::HTTP_OK);
+                        'id' => $suppId,
+                        'message' => 'Supplier '.$suppId.' has been modified!'
+                    ], REST_Controller::HTTP_CREATED);
                 } else {
                     $this->response([
                         'status' => false,
@@ -97,7 +97,6 @@ class customers extends REST_Controller
                     ], REST_Controller::HTTP_OK);
                 }
             }
-
         } else {
             $this->response([
                 'status' => false,
@@ -110,22 +109,22 @@ class customers extends REST_Controller
     public function index_delete()
     {
         if ($this->delete()) {
-            $custId = $this->delete('cust_id');
+            $suppId = $this->delete('supplier_id');
 
-            if (trim($custId) == "") {
+            if (trim($suppId) == "") {
                 $this->response([
                     'status' => false,
-                    'message' => 'Provide a Customer ID!'
+                    'message' => 'Provide an Supplier ID!'
                 ], REST_Controller::HTTP_OK);
             } else {
-                $delete = $this->cust->deleteCustomer($custId);
+                $delete = $this->supplier->deleteSupplier($suppId);
 
                 if ($delete > 0) {
                     $this->response([
                         'status' => true,
-                        'id' => $custId,
-                        'message' => 'Customer '.$custId.' has been deleted!'
-                    ], REST_Controller::HTTP_OK);
+                        'id' => $suppId,
+                        'message' => 'Supplier '.$suppId.' has been deleted!'
+                    ], REST_Controller::HTTP_CREATED);
                 } else {
                     $this->response([
                         'status' => false,
