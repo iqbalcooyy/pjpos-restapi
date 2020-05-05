@@ -82,6 +82,7 @@ class stock extends REST_Controller
         if ($this->put()) {
             $data = $this->put();
             $itemId = $data['item_id'];
+            
             if(
                 trim($data['item_id']) == "" ||
                 trim($data['item_name']) == "" || 
