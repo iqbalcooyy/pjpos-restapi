@@ -20,10 +20,12 @@ class trx_sales extends REST_Controller
         if ($this->post()) {
             $data = $this->post();
             $salesId = 'S'.$this->sales->getSalesId(); //S is Sales
+            $paid = $data['paid'];
+            $discount = $data['discount'];
 
-            if($data['paid'] < $data['to_be_paid']) {
+            if($paid+$discount < $data['to_be_paid']) {
                 $statusSale = 'Terhutang';
-            } elseif($data['paid'] == $data['to_be_paid']) {
+            } elseif($paid+$discount == $data['to_be_paid']) {
                 $statusSale = 'Lunas';
             }
 

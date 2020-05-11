@@ -41,7 +41,7 @@ class sales_model extends CI_Model
         $this->db->insert_batch('trx_sales_detail', $details);
 
         //Update Stock after Sales
-        for($i=0; $i < $size; $i++){
+        for($i=0; $i<$size; $i++){
             $item_id = $data['item_id'][$i];
             $sale_qty = $data['sale_qty'][$i];
 

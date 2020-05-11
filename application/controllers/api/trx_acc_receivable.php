@@ -38,7 +38,7 @@ class trx_acc_receivable extends REST_Controller
     {
         if ($this->post()) {
             $data = $this->post();
-            if($data['sale_id'] == "" || $data['cust_id'] == "" || $data['ar_total'] == "") {
+            if(trim($data['sale_id']) == "" || trim($data['cust_id']) == "" || trim($data['ar_total']) == "") {
                 $this->response([
                     'status' => false,
                     'message' => 'Mohon, lengkapi data!'
@@ -60,6 +60,49 @@ class trx_acc_receivable extends REST_Controller
                     $this->response([
                         'status' => false,
                         'message' => 'Failed to created new data!'
+                    ], REST_Controller::HTTP_OK);
+                }
+            }
+
+        } else {
+            $this->response([
+                'status' => false,
+                'message' => 'Data value cannot be null!'
+            ], REST_Controller::HTTP_OK);
+        }
+    }
+
+    //UPDATE
+    public function index_put()
+    {
+        if ($this->put()) {
+            $data = $this->put();
+
+            if(trim($data['ar_id']) == "" || trim($data['ar_paid']) == "") {
+                $this->response([
+                    'status' => false,
+                    'message' => 'Mohon, lengkapi data!'
+                ], REST_Controller::HTTP_OK);
+            } else {
+                $update = $this->ar_model->updateAr($data);
+                $getAr = $this->ar_model->getArWithId($data['ar_id']);
+
+                foreach ($getAr->result() as $row)
+                {
+                    $arStatus = $row->ar_status;
+                }
+
+                if ($update > 0) {
+                    $this->response([
+                        'status' => true,
+                        'id' => $data['ar_id'],
+                        'ar_status' => $arStatus,
+                        'message' => 'Piutang '.$data['ar_id'].' has been modified!'
+                    ], REST_Controller::HTTP_OK);
+                } else {
+                    $this->response([
+                        'status' => false,
+                        'message' => 'Failed to modify the data!'
                     ], REST_Controller::HTTP_OK);
                 }
             }
