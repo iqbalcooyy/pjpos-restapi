@@ -33,7 +33,12 @@ class purchase_model extends CI_Model
             );
         }
 
-        $this->db->insert('trx_purchase_header', ['purchase_id' => $purchaseId, 'supplier_id' => $data['supplier_id'], 'purchase_price_total' => $data['purchase_price_total']]);
+        $this->db->insert('trx_purchase_header', [
+            'purchase_id' => $purchaseId, 
+            'supplier_id' => $data['supplier_id'], 
+            'purchase_price_total' => $data['purchase_price_total'],
+            'created_by' => $data['user']
+            ]);
         $this->db->insert_batch('trx_purchase_detail', $details);
 
         //Update Stock after Purchase

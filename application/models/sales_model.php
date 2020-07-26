@@ -36,7 +36,8 @@ class sales_model extends CI_Model
             'to_be_paid' => $data['to_be_paid'], 
             'discount' => $data['discount'],
             'paid' => $data['paid'],
-            'status' => $statusSale
+            'status' => $statusSale,
+            'created_by' => $data['user']
             ]);
         $this->db->insert_batch('trx_sales_detail', $details);
 

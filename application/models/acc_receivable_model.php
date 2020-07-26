@@ -50,7 +50,8 @@ class acc_receivable_model extends CI_Model
             'cust_id' => $data['cust_id'],
             'ar_total' => $data['ar_total'],
             'remaining_payment' => $data['ar_total'],
-            'ar_status' => $arStatus
+            'ar_status' => $arStatus,
+            'created_by' => $data['user']
             ]);
 
         return $this->db->affected_rows();
@@ -61,6 +62,7 @@ class acc_receivable_model extends CI_Model
         $arId = $data['ar_id'];
         $arPaid = $data['ar_paid'];
         $arNotes = $data['notes'];
+        $saleId = $data['sale_id'];
 
         //Update Remaining Payment
         $this->db->query("UPDATE trx_account_receivable
@@ -90,6 +92,29 @@ class acc_receivable_model extends CI_Model
             ],
             [
                 'ar_id' =>  $arId
+            ]);
+        }
+
+        //Update Pembayaran Trx Sales
+        $this->db->query("UPDATE trx_sales_header
+                        SET paid = paid + $arPaid
+                        WHERE sale_id = '$saleId'"
+        );
+
+        //Update status pembayaran Trx Sales
+        $getSales = $this->db->get_where('trx_sales_header', ['sale_id' => $saleId]);
+        foreach ($getSales->result() as $col)
+        {
+            $to_be_paid = $col->to_be_paid;
+            $paid = $col->paid;
+        }
+        if ($paid >= $to_be_paid) {
+            $this->db->update('trx_sales_header', 
+            [
+                'status' => "Lunas"
+            ],
+            [
+                'sale_id' =>  $saleId
             ]);
         }
         
